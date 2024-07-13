@@ -49,6 +49,7 @@
     fastfetch
     fd
     ffmpeg
+    file
     ghostscript
     glow
     go
@@ -87,6 +88,8 @@
     tldr
     unixtools.col
     unrar
+    unzip
+    zip
     zsh
   ];
 

@@ -28,6 +28,7 @@ ENV TERM="${TERM:-xterm-256color}"
 RUN curl -sSLf https://raw.githubusercontent.com/DanSM-5/user-configuration/master/setup.sh | bash
 RUN touch "$HOME/.usr_conf/.uconfrc" "$HOME/.usr_conf/.ualiasrc"
 RUN printf "%s" ". \$HOME/.bashrc" >> "$HOME/.bash_profile"
+ADD ./prj "$HOME/.usr_conf/prj"
 # Config lf
 RUN ln -s $HOME/user-scripts/lf $HOME/.config/lf
 # Preload theme
