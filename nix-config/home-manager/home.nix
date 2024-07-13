@@ -56,6 +56,7 @@
     # gallery-dl
     ghostscript
     glow
+    go
     gron
     gnused
     gawk
@@ -69,10 +70,11 @@
     # mpv
     # micro
     neovim
+    ncurses
     oh-my-posh
+    pipx
     poppler_utils
     # procs
-    pipx
     (python3Full.withPackages (ps: with ps; [
       pip
       # setuptools
@@ -115,7 +117,7 @@
   #
   # or
   #
-  #  /etc/profiles/per-user/daniel/etc/profile.d/hm-session-vars.sh
+  #  /etc/profiles/per-user/user/etc/profile.d/hm-session-vars.sh
   #
   # if you don't want to manage your shell through Home Manager.
   home.sessionVariables = {
