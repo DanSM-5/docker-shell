@@ -65,11 +65,16 @@
     neovim
     ncurses
     oh-my-posh
+    perl
     pipx
     poppler_utils
+    ps
     (python3Full.withPackages (ps: with ps; [
-      pip
+      greenlet
+      msgpack
       neovim
+      pip
+      pynvim
       # setuptools
     ]))
     rclone
@@ -80,6 +85,7 @@
     sqlite
     starship
     tldr
+    unixtools.col
     unrar
     zsh
   ];
