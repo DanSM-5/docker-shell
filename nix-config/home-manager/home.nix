@@ -36,7 +36,6 @@
     # '')
 
     _7zz
-    # ani-cli
     bat
     btop
     bun
@@ -48,12 +47,8 @@
     erdtree
     eza
     fastfetch
-    # fclones
-    # fdupes
     fd
     ffmpeg
-    # fzf
-    # gallery-dl
     ghostscript
     glow
     go
@@ -67,18 +62,15 @@
     jc
     jo
     lf
-    # mpv
-    # micro
     neovim
     ncurses
     oh-my-posh
     pipx
     poppler_utils
-    # procs
     (python3Full.withPackages (ps: with ps; [
       pip
-      # setuptools
       neovim
+      # setuptools
     ]))
     rclone
     ripgrep
@@ -89,9 +81,6 @@
     starship
     tldr
     unrar
-    # xidel
-    # yt-dlp
-    # ytfzf
     zsh
   ];
 
