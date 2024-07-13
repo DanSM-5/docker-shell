@@ -1,0 +1,13 @@
+name: docker-shell
+
+version: '3'
+services:
+  config:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      USE_SSG_REMOTE: "false"
+      SETUP_TERMINAL: "false"
+    volumes:
+      - ./:/tmp/workspace
