@@ -25,6 +25,8 @@ ENV USE_SSH_REMOTE="${USE_SSH_REMOTE:-false}"
 ENV SETUP_TERMINAL="${SETUP_TERMINAL:-false}"
 ENV TERM="${TERM:-xterm-256color}"
 RUN curl -sSLf https://raw.githubusercontent.com/DanSM-5/user-configuration/master/setup.sh | bash
+# Config lf
+RUN ln -s $HOME/user-scripts/lf $HOME/.config/lf
 # Preload theme
 RUN zsh -li \
   -c 'fast-theme $HOME/.usr_conf/theme/clean.ini'
