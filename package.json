@@ -1,5 +1,5 @@
 {
-  "name": "docker-config",
+  "name": "docker-shell",
   "version": "1.0.0",
   "description": "personal terminal configuration",
   "main": "index.js",
