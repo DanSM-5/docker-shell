@@ -2,6 +2,7 @@ FROM nixos/nix AS runner
 
 # Setup home manager
 ENV HOME="/root"
+ENV IS_FROM_CONTAINER=true
 ADD ./nix-config "$HOME/.config"
 RUN nix-env --uninstall man-db
 RUN nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
