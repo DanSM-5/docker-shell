@@ -19,9 +19,9 @@ RUN curl -sLf https://spacevim.org/install.sh | bash -s -- --install neovim
 RUN cd "$HOME/.SpaceVim" && \
   git pull --unshallow && \
   git checkout 721e3118
-RUN python3 -m pip install neovim
-RUN pipx install posting && \
-  pipx install speedtest-cli
+# RUN python3 -m pip install neovim
+# RUN pipx install posting && \
+#   pipx install speedtest-cli
 # Download config files
 ENV USE_SSH_REMOTE="${USE_SSH_REMOTE:-false}"
 ENV SETUP_TERMINAL="${SETUP_TERMINAL:-false}"

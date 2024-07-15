@@ -38,15 +38,16 @@
     _7zz
     bat
     btop
-    bun
+    # bun
     chafa
+    # clipboard-jh
     curl
     delta
-    dog
+    # dog # DNS look up tool
     dua
     erdtree
     eza
-    fastfetch
+    # fastfetch
     fd
     ffmpeg
     file
@@ -56,12 +57,12 @@
     gron
     gnused
     gawk
-    highlight
-    hyperfine
+    # highlight
+    # hyperfine # Benchmarks
     imagemagick
     jq
-    jc
-    jo
+    # jc # convert text into json
+    # jo # convert key=value pairs into json
     lf
     neovim
     ncurses
@@ -79,6 +80,7 @@
       # setuptools
     ]))
     rclone
+    # rsync
     ripgrep
     rustup
     sd
@@ -87,7 +89,7 @@
     starship
     tldr
     unixtools.col
-    unrar
+    # unrar
     unzip
     zip
     zsh
