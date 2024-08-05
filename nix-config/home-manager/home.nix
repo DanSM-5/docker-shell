@@ -40,6 +40,7 @@
     btop
     # bun
     chafa
+    # clang
     # clipboard-jh
     curl
     delta
@@ -51,12 +52,13 @@
     fd
     ffmpeg
     file
+    gawk
+    gnumake
     ghostscript
     glow
     go
     gron
     gnused
-    gawk
     # highlight
     # hyperfine # Benchmarks
     imagemagick
@@ -64,21 +66,24 @@
     # jc # convert text into json
     # jo # convert key=value pairs into json
     lf
+    lua-language-server
     neovim
     ncurses
+    nodejs_20
     oh-my-posh
     perl
     pipx
     poppler_utils
     ps
-    (python3Full.withPackages (ps: with ps; [
-      greenlet
-      msgpack
-      neovim
-      pip
-      pynvim
-      # setuptools
-    ]))
+    python3Full
+    # (python3Full.withPackages (ps: with ps; [
+    #   greenlet
+    #   msgpack
+    #   neovim
+    #   pip
+    #   pynvim
+    #   # setuptools
+    # ]))
     rclone
     # rsync
     ripgrep
@@ -91,6 +96,7 @@
     unixtools.col
     # unrar
     unzip
+    zig
     zip
     zsh
   ];
