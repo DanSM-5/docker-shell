@@ -62,13 +62,14 @@
     # highlight
     # hyperfine # Benchmarks
     imagemagick
+    iputils
     jq
     # jc # convert text into json
     # jo # convert key=value pairs into json
     lf
     lua-language-server
-    neovim
     ncurses
+    neovim
     nodejs_20
     oh-my-posh
     perl
@@ -93,6 +94,7 @@
     sqlite
     starship
     tldr
+    typescript-language-server
     unixtools.col
     # unrar
     unzip
