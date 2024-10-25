@@ -15,9 +15,6 @@ RUN nix-channel --update
 RUN nix-shell '<home-manager>' -A install
 RUN home-manager switch
 RUN nix-collect-garbage --delete-old
-# Get fzf. Separately obtained to get latest version and bindings
-RUN git clone https://github.com/junegunn/fzf ~/.software/fzf
-RUN printf "y\ny\nn" | ~/.software/fzf/install
 # RUN pipx install posting && \
 #   pipx install speedtest-cli
 RUN git config --global --add safe.directory '*'
@@ -30,6 +27,8 @@ RUN echo 'nvm_get_arch() { nvm_echo x64-musl; } # Needed to build the download U
 RUN printf "%s" ". \$HOME/.bashrc" >> "$HOME/.bash_profile"
 ADD ./prj "$HOME/.usr_conf/prj"
 ADD .zsh_history "$HOME/.zsh_history"
+RUN printf "y\ny\nn" | ~/user-scripts/fzf/install
+RUN oh-my-posh disable notice
 # Install nvim plugins
 # RUN ls -AlF $HOME
 # Config lf
