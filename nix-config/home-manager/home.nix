@@ -74,9 +74,9 @@
     oh-my-posh
     perl
     pipx
-    poppler_utils
+    poppler
     ps
-    python3Full
+    python314
     # (python3Full.withPackages (ps: with ps; [
     #   greenlet
     #   msgpack

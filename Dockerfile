@@ -1,7 +1,7 @@
 FROM nixos/nix AS runner
 
 # Setup home location
-ENV HOME="${HOME_PATH:-/root}"
+ENV HOME=/root
 ENV IS_FROM_CONTAINER=true
 # Set up unofficial builds for nvm
 ENV NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release
@@ -19,8 +19,8 @@ RUN nix-collect-garbage --delete-old
 #   pipx install speedtest-cli
 RUN git config --global --add safe.directory '*'
 # Download config files
-ENV USE_SSH_REMOTE="${USE_SSH_REMOTE:-false}"
-ENV SETUP_TERMINAL="${SETUP_TERMINAL:-false}"
+ENV USE_SSH_REMOTE=false
+ENV SETUP_TERMINAL=false
 RUN curl -sSLf https://raw.githubusercontent.com/DanSM-5/user-configuration/master/setup.sh | bash
 RUN touch "$HOME/.usr_conf/.uconfrc" "$HOME/.usr_conf/.ualiasrc"
 RUN echo 'nvm_get_arch() { nvm_echo x64-musl; } # Needed to build the download URL' >> "$HOME/.usr_conf/.uconfrc"

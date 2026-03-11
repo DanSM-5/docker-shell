@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      USE_SSG_REMOTE: "false"
+      USE_SSH_REMOTE: "false"
       SETUP_TERMINAL: "false"
     volumes:
       - ./:/tmp/workspace
