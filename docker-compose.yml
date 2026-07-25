@@ -6,6 +6,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        USERNAME: "${SHELL_USERNAME:-shell}"
+        USER_UID: "${SHELL_UID:-1000}"
+        USER_GID: "${SHELL_GID:-1000}"
     environment:
       USE_SSH_REMOTE: "false"
       SETUP_TERMINAL: "false"

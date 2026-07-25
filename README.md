@@ -15,13 +15,33 @@ Run the container with the commands:
 # pull image
 docker pull edsm5/shell-config:latest
 # run image
-docker run -e LC_ALL=C.UTF-8 -e COLORTERM -e TERM -w /root -it edsm5/shell-config # Defaults to zsh
+docker run -e LC_ALL=C.UTF-8 -e COLORTERM -e TERM -it edsm5/shell-config # Defaults to zsh
 # use bash shell instead
-docker run -e LC_ALL=C.UTF-8 -e COLORTERM -e TERM -w /root -it edsm5/shell-config bash -li
+docker run -e LC_ALL=C.UTF-8 -e COLORTERM -e TERM -it edsm5/shell-config bash -li
 ```
 
 > [!WARNING]
 > This container is about 4GB uncompressed. Be sure to have enough disk space and a stable internet connection.
+
+The container runs as the unprivileged `shell` user (UID/GID `1000`) by
+default. Its home directory is `/home/shell`. To match a different host UID or
+GID when building locally:
+
+```bash
+docker build \
+  --build-arg USERNAME=shell \
+  --build-arg USER_UID="$(id -u)" \
+  --build-arg USER_GID="$(id -g)" \
+  -t docker-shell .
+```
+
+Nix and Home Manager are configured for this user, so both can update without
+root access:
+
+```bash
+nix-channel --update
+home-manager switch
+```
 
 ## Reading projects
 
@@ -30,7 +50,6 @@ Set the variable `PROJECTS` to a path within the container for the mapping `ctrl
 ```bash
 docker run \
   -e LC_ALL=C.UTF-8 -e COLORTERM -e TERM \
-  -w /root \
   -e PROJECTS=/tmp/projects -v "$HOME/projects:/tmp/projects" \
   -it edsm5/shell-config
 ```
@@ -52,4 +71,3 @@ There are some other repos included which are not relevant for the demo.
 
 On first use run `rupdate` built-in function to sync all important repos to use latest config available.
 To update your current session run `spf`.
-

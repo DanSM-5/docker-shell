@@ -1,10 +1,13 @@
 { config, pkgs, ... }:
 
-{
+let
+  username = builtins.getEnv "USER";
+  homeDirectory = builtins.getEnv "HOME";
+in {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = "root";
-  home.homeDirectory = "/root";
+  home.username = username;
+  home.homeDirectory = homeDirectory;
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -40,7 +43,7 @@
     btop
     # bun
     chafa
-    # clang
+    clang
     # clipboard-jh
     curl
     delta
@@ -70,10 +73,13 @@
     lua-language-server
     ncurses
     neovim
-    nodejs_20
+    nodejs
     oh-my-posh
     perl
-    pipx
+    (pipx.overridePythonAttrs (_: {
+      doCheck = false;
+      doInstallCheck = false;
+    }))
     poppler
     ps
     python314
@@ -94,6 +100,7 @@
     sqlite
     starship
     tldr
+    tree-sitter
     typescript-language-server
     unixtools.col
     # unrar
@@ -135,4 +142,3 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 }
-

@@ -1,15 +1,50 @@
 FROM nixos/nix AS runner
 
-# Setup home location
-ENV HOME=/root
+ARG USERNAME=shell
+ARG USER_UID=1000
+ARG USER_GID=1000
+
 ENV IS_FROM_CONTAINER=true
 # Set up unofficial builds for nvm
 ENV NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release
 # (Optional) Disable IOJS from appearing on ls-remote
 ENV NVM_IOJS_ORG_MIRROR=https://example.com
-# Setup home manager
-ADD ./nix-config "$HOME/.config"
+
+# The base image stores its account files in the read-only Nix store. Replace
+# those symlinks with regular files before creating the unprivileged account.
 RUN nix-env --uninstall man-db
+RUN set -eux; \
+    shadow_bin="$(dirname "$(grep '^nobody:' /etc/passwd | cut -d: -f7)")"; \
+    for account_file in passwd group shadow; do \
+      cp "/etc/$account_file" "/etc/$account_file.new"; \
+      mv "/etc/$account_file.new" "/etc/$account_file"; \
+    done; \
+    "$shadow_bin/groupadd" --gid "$USER_GID" "$USERNAME"; \
+    "$shadow_bin/useradd" \
+      --uid "$USER_UID" \
+      --gid "$USER_GID" \
+      --home-dir "/home/$USERNAME" \
+      --create-home \
+      --shell /bin/sh \
+      "$USERNAME"; \
+    mkdir -p "/nix/var/nix/profiles/per-user/$USERNAME"; \
+    chown -R "$USER_UID:$USER_GID" "/home/$USERNAME" /nix
+
+RUN chmod 0644 /etc/passwd /etc/group && \
+    chmod 0600 /etc/shadow
+
+ENV HOME="/home/$USERNAME"
+ENV USER="$USERNAME"
+ENV PATH="$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin"
+ENV MANPATH="$HOME/.nix-profile/share/man:/nix/var/nix/profiles/default/share/man"
+ENV NIX_PATH="$HOME/.nix-defexpr/channels"
+
+USER "$USER_UID:$USER_GID"
+WORKDIR "$HOME"
+
+# Set up Home Manager and all shell configuration as the runtime user.
+COPY --chown="$USER_UID:$USER_GID" ./nix-config "$HOME/.config"
+RUN nix-channel --add https://channels.nixos.org/nixpkgs-unstable nixpkgs
 RUN nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
 RUN nix-channel --update
 RUN nix-shell '<home-manager>' -A install
@@ -21,12 +56,17 @@ RUN git config --global --add safe.directory '*'
 # Download config files
 ENV USE_SSH_REMOTE=false
 ENV SETUP_TERMINAL=false
-RUN curl -sSLf https://raw.githubusercontent.com/DanSM-5/user-configuration/master/setup.sh | bash
+RUN set -eux; \
+    curl -sSLf \
+      -o /tmp/user-configuration-setup.sh \
+      https://raw.githubusercontent.com/DanSM-5/user-configuration/master/setup.sh; \
+    bash /tmp/user-configuration-setup.sh; \
+    rm /tmp/user-configuration-setup.sh
 RUN touch "$HOME/.usr_conf/.uconfrc" "$HOME/.usr_conf/.ualiasrc"
 RUN echo 'nvm_get_arch() { nvm_echo x64-musl; } # Needed to build the download URL' >> "$HOME/.usr_conf/.uconfrc"
 RUN printf "%s" ". \$HOME/.bashrc" >> "$HOME/.bash_profile"
-ADD ./prj "$HOME/.usr_conf/prj"
-ADD .zsh_history "$HOME/.zsh_history"
+COPY --chown="$USER_UID:$USER_GID" ./prj "$HOME/.usr_conf/prj"
+COPY --chown="$USER_UID:$USER_GID" .zsh_history "$HOME/.zsh_history"
 RUN printf "y\ny\nn" | ~/user-scripts/fzf/install
 RUN oh-my-posh disable notice
 # Install nvim plugins
@@ -35,8 +75,7 @@ RUN oh-my-posh disable notice
 RUN ln -s $HOME/user-scripts/lf $HOME/.config/lf
 # Preload theme
 RUN zsh -li \
-  -c 'fast-theme $HOME/.usr_conf/theme/clean.ini && nvm ls-remote'
+  -c 'fast-theme $HOME/.usr_conf/theme/clean.ini'
 # CLI
 # call container with bash -li to use bash
 CMD [ "zsh", "-li" ]
-
