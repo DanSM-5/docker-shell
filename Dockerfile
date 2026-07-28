@@ -52,6 +52,16 @@ RUN nix run --no-update-lock-file "$HOME/.config#home-manager" -- \
       --impure \
       --no-write-lock-file \
       --flake "$HOME/.config#default"
+# Keep the musl runtime as a GC root so NVM-downloaded Node binaries can use it.
+RUN nix build --no-update-lock-file \
+      --out-link /nix/var/nix/gcroots/docker-shell-nvm-runtime \
+      "$HOME/.config#nvm-runtime"
+USER root
+RUN set -eux; \
+    test ! -e /lib; \
+    test ! -L /lib; \
+    ln -s /nix/var/nix/gcroots/docker-shell-nvm-runtime/lib /lib
+USER "$USER_UID:$USER_GID"
 RUN nix-collect-garbage --delete-old
 # RUN pipx install posting && \
 #   pipx install speedtest-cli
@@ -86,8 +96,14 @@ RUN zsh -li \
   -c 'fast-theme $HOME/.usr_conf/theme/clean.ini; \
       nvm --version >/dev/null; \
       case "$(uname -m)" in \
-        x86_64|amd64) test "$(nvm_get_arch)" = x64-musl ;; \
-        aarch64|arm64) test "$(nvm_get_arch)" = arm64-musl ;; \
+        x86_64|amd64) \
+          test "$(nvm_get_arch)" = x64-musl; \
+          test -x /lib/ld-musl-x86_64.so.1 \
+          ;; \
+        aarch64|arm64) \
+          test "$(nvm_get_arch)" = arm64-musl; \
+          test -x /lib/ld-musl-aarch64.so.1 \
+          ;; \
       esac'
 # CLI
 # call container with bash -li to use bash

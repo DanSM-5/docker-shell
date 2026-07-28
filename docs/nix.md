@@ -15,7 +15,7 @@ package such as Neovim is resolved from the locked Nixpkgs revision.
 
 | File | Purpose |
 | --- | --- |
-| `nix-config/flake.nix` | Declares Nixpkgs and Home Manager, and connects them to the Home Manager configuration. |
+| `nix-config/flake.nix` | Declares Nixpkgs, Home Manager, and the musl runtime needed by NVM-downloaded Node versions. |
 | `nix-config/flake.lock` | Pins the exact dependency revisions and content hashes. Commit this file. |
 | `nix-config/home-manager/home.nix` | Lists the packages and user settings installed in the container. |
 | `nix-config/nix/nix.conf` | Enables the `nix` command and flake features. |

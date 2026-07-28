@@ -46,8 +46,25 @@
       homeConfigurations.default = mkHomeConfiguration builtins.currentSystem;
 
       # Expose the locked Home Manager CLI for the initial Docker activation.
-      packages = forAllSystems (system: {
-        home-manager = home-manager.packages.${system}.home-manager;
-      });
+      packages = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          home-manager = home-manager.packages.${system}.home-manager;
+
+          # NVM downloads musl-linked Node builds in this image. Unlike Nix
+          # packages, those binaries expect their loader and C++ libraries in
+          # the conventional /lib location.
+          nvm-runtime = pkgs.symlinkJoin {
+            name = "nvm-musl-runtime";
+            paths = [
+              pkgs.musl.out
+              pkgs.pkgsMusl.stdenv.cc.cc.lib
+            ];
+          };
+        }
+      );
     };
 }

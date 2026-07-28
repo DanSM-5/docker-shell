@@ -15,13 +15,18 @@ Run the container with the commands:
 # pull image
 docker pull edsm5/shell-config:latest
 # run image
-docker run -e COLORTERM -e TERM -it edsm5/shell-config # Defaults to zsh
+docker run -e TERM=xterm-256color -it edsm5/shell-config # Defaults to zsh
 # use bash shell instead
-docker run -e COLORTERM -e TERM -it edsm5/shell-config bash -li
+docker run -e TERM=xterm-256color -it edsm5/shell-config bash -li
 ```
 
 > [!WARNING]
 > This container is about 4GB uncompressed. Be sure to have enough disk space and a stable internet connection.
+
+The image intentionally leaves `TERM` to the caller because the correct value
+depends on the terminal running the container. Use
+`-e TERM=xterm-256color` as shown above to enable 256-color syntax
+highlighting.
 
 The container runs as the unprivileged `shell` user (UID/GID `1000`) by
 default. Its home directory is `/home/shell`. To match a different host UID or
@@ -54,10 +59,25 @@ Set the variable `PROJECTS` to a path within the container for the mapping `ctrl
 
 ```bash
 docker run \
-  -e COLORTERM -e TERM \
+  -e TERM=xterm-256color \
   -e PROJECTS=/tmp/projects -v "$HOME/projects:/tmp/projects" \
   -it edsm5/shell-config
 ```
+
+## Using NVM
+
+Node from Nix is available by default for Neovim and other build-time tools.
+NVM can install and select additional Node versions for interactive work:
+
+```bash
+nvm install 14.9.0
+nvm use 14.9.0
+node -v
+```
+
+NVM uses the unofficial musl builds because the container has no traditional
+Linux filesystem hierarchy. The image exposes a small, Nix-pinned musl runtime
+at `/lib` so the downloaded `node` and `npm` executables can run.
 
 ## Using auto-remove
 
