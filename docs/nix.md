@@ -54,6 +54,52 @@ the build stops with an error.
 setting, not the installed Home Manager version. Do not change it during normal
 updates.
 
+## Install a package in a running container
+
+For an interactive experiment, install a package into the current user's Nix
+profile:
+
+```bash
+nix profile install \
+  --inputs-from "$HOME/.config" \
+  nixpkgs#hello
+```
+
+The command becomes available immediately:
+
+```bash
+hello
+```
+
+`--inputs-from "$HOME/.config"` makes `nixpkgs` refer to the revision pinned by
+the container's `~/.config/flake.lock`. Without it, `nixpkgs#hello` could be
+resolved through a separate registry entry instead of this project's lock.
+
+Useful profile commands:
+
+```bash
+# Show packages installed in the user profile
+nix profile list
+
+# Remove an interactively installed package
+nix profile remove hello
+```
+
+To use a package temporarily without installing it:
+
+```bash
+# Open a shell that contains the package
+nix shell --inputs-from "$HOME/.config" nixpkgs#hello
+
+# Run one command and then leave the temporary environment
+nix shell --inputs-from "$HOME/.config" nixpkgs#hello -c hello
+```
+
+An interactive profile installation lasts only as long as that container and
+is lost when the container is removed. To include a package in every rebuilt
+image, add it to `home.packages` in
+`nix-config/home-manager/home.nix` instead.
+
 ## Update Nixpkgs and Home Manager
 
 Run this from the project checkout:
