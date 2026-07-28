@@ -5,6 +5,10 @@ ARG USER_UID=1000
 ARG USER_GID=1000
 
 ENV IS_FROM_CONTAINER=true
+# Zsh completion plugins use Unicode characters while they initialize. The Nix
+# base image does not set a locale, so default to its available UTF-8 locale.
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 # Set up unofficial builds for nvm
 ENV NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release
 # (Optional) Disable IOJS from appearing on ls-remote
@@ -37,18 +41,17 @@ ENV HOME="/home/$USERNAME"
 ENV USER="$USERNAME"
 ENV PATH="$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin"
 ENV MANPATH="$HOME/.nix-profile/share/man:/nix/var/nix/profiles/default/share/man"
-ENV NIX_PATH="$HOME/.nix-defexpr/channels"
 
 USER "$USER_UID:$USER_GID"
 WORKDIR "$HOME"
 
-# Set up Home Manager and all shell configuration as the runtime user.
+# Activate the locked Home Manager flake as the runtime user.
 COPY --chown="$USER_UID:$USER_GID" ./nix-config "$HOME/.config"
-RUN nix-channel --add https://channels.nixos.org/nixpkgs-unstable nixpkgs
-RUN nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
-RUN nix-channel --update
-RUN nix-shell '<home-manager>' -A install
-RUN home-manager switch
+RUN nix run --no-update-lock-file "$HOME/.config#home-manager" -- \
+      switch \
+      --impure \
+      --no-write-lock-file \
+      --flake "$HOME/.config#default"
 RUN nix-collect-garbage --delete-old
 # RUN pipx install posting && \
 #   pipx install speedtest-cli
@@ -63,7 +66,12 @@ RUN set -eux; \
     bash /tmp/user-configuration-setup.sh; \
     rm /tmp/user-configuration-setup.sh
 RUN touch "$HOME/.usr_conf/.uconfrc" "$HOME/.usr_conf/.ualiasrc"
-RUN echo 'nvm_get_arch() { nvm_echo x64-musl; } # Needed to build the download URL' >> "$HOME/.usr_conf/.uconfrc"
+COPY --chown="$USER_UID:$USER_GID" \
+  ./container-config/zsh-overrides.zsh \
+  "$HOME/.zsh-container-overrides.zsh"
+RUN printf '%s\n' \
+      'source "$HOME/.zsh-container-overrides.zsh"' \
+      >> "$HOME/.zshrc"
 RUN printf "%s" ". \$HOME/.bashrc" >> "$HOME/.bash_profile"
 COPY --chown="$USER_UID:$USER_GID" ./prj "$HOME/.usr_conf/prj"
 COPY --chown="$USER_UID:$USER_GID" .zsh_history "$HOME/.zsh_history"
@@ -75,7 +83,12 @@ RUN oh-my-posh disable notice
 RUN ln -s $HOME/user-scripts/lf $HOME/.config/lf
 # Preload theme
 RUN zsh -li \
-  -c 'fast-theme $HOME/.usr_conf/theme/clean.ini'
+  -c 'fast-theme $HOME/.usr_conf/theme/clean.ini; \
+      nvm --version >/dev/null; \
+      case "$(uname -m)" in \
+        x86_64|amd64) test "$(nvm_get_arch)" = x64-musl ;; \
+        aarch64|arm64) test "$(nvm_get_arch)" = arm64-musl ;; \
+      esac'
 # CLI
 # call container with bash -li to use bash
 CMD [ "zsh", "-li" ]

@@ -15,9 +15,9 @@ Run the container with the commands:
 # pull image
 docker pull edsm5/shell-config:latest
 # run image
-docker run -e LC_ALL=C.UTF-8 -e COLORTERM -e TERM -it edsm5/shell-config # Defaults to zsh
+docker run -e COLORTERM -e TERM -it edsm5/shell-config # Defaults to zsh
 # use bash shell instead
-docker run -e LC_ALL=C.UTF-8 -e COLORTERM -e TERM -it edsm5/shell-config bash -li
+docker run -e COLORTERM -e TERM -it edsm5/shell-config bash -li
 ```
 
 > [!WARNING]
@@ -35,13 +35,18 @@ docker build \
   -t docker-shell .
 ```
 
-Nix and Home Manager are configured for this user, so both can update without
-root access:
+Nix and Home Manager are configured through the locked flake in
+`~/.config/flake.lock`. To update the locked inputs and activate the result
+without root access:
 
 ```bash
-nix-channel --update
-home-manager switch
+cd "$HOME/.config"
+nix flake update nixpkgs home-manager
+home-manager switch --impure --flake .#default
 ```
+
+See [Nix and Home Manager usage](docs/nix.md) for the file layout, package
+changes, updates, and pinning details.
 
 ## Reading projects
 
@@ -49,7 +54,7 @@ Set the variable `PROJECTS` to a path within the container for the mapping `ctrl
 
 ```bash
 docker run \
-  -e LC_ALL=C.UTF-8 -e COLORTERM -e TERM \
+  -e COLORTERM -e TERM \
   -e PROJECTS=/tmp/projects -v "$HOME/projects:/tmp/projects" \
   -it edsm5/shell-config
 ```

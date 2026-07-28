@@ -1,9 +1,12 @@
-{ config, pkgs, ... }:
+{
+  config,
+  homeDirectory,
+  pkgs,
+  username,
+  ...
+}:
 
-let
-  username = builtins.getEnv "USER";
-  homeDirectory = builtins.getEnv "HOME";
-in {
+{
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = username;
