@@ -155,6 +155,41 @@ The `--impure` option is needed because this image can be built with a custom
 username, home directory, and CPU architecture. Those three values come from
 the container environment. Dependency revisions still come from `flake.lock`.
 
+### Experiment with a newer Nixpkgs revision
+
+To update only Nixpkgs inside a running container, first save the current lock
+file:
+
+```bash
+cd "$HOME/.config"
+cp flake.lock /tmp/flake.lock.before-nixpkgs-update
+
+nix flake update nixpkgs
+home-manager switch --impure --flake .#default
+```
+
+This moves Nixpkgs to the latest revision of the configured
+`nixpkgs-unstable` branch. It does not update the pinned Home Manager revision.
+Commands that use:
+
+```bash
+--inputs-from "$HOME/.config"
+```
+
+will also use this experimental Nixpkgs revision.
+
+To return to the previous revision:
+
+```bash
+cp /tmp/flake.lock.before-nixpkgs-update "$HOME/.config/flake.lock"
+home-manager switch --impure --flake "$HOME/.config#default"
+```
+
+The experiment affects only the running container and is lost when the
+container is removed, unless `~/.config` is mounted from the host. For a
+permanent image update, update and commit `nix-config/flake.lock` in the source
+repository and rebuild the image.
+
 ## Check what is pinned
 
 From `nix-config`:
